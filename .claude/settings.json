@@ -8,5 +8,13 @@
       "Bash(npm run test *)",
       "Bash(npm run lint)"
     ]
+  },
+  "sandbox": {
+    "enabled": true,
+    "credentials": {
+      "envVars": [
+        { "name": "GITHUB_TOKEN", "mode": "deny" }
+      ]
+    }
   }
 }

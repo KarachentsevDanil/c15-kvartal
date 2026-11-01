@@ -1,0 +1,16 @@
+{
+  "sandbox": {
+    "network": {
+      "tlsTerminate": {}
+    },
+    "credentials": {
+      "envVars": [
+        {
+          "name": "NPM_TOKEN",
+          "mode": "mask",
+          "injectHosts": ["npm.pkg.github.com"]
+        }
+      ]
+    }
+  }
+}
