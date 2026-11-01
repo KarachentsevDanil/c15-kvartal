@@ -12,6 +12,6 @@ afterAll(async () => {
 
 describe("міграції", () => {
   it("створюють таблиці на порожній базі", async () => {
-    expect(await tableNames(t.db)).toEqual(["clients", "declarations"]);
+    expect(await tableNames(t.db)).toEqual(["clients", "declarations", "filing_attempts"]);
   });
 });

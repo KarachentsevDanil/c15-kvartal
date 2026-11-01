@@ -1,10 +1,8 @@
 import Fastify, { type FastifyServerOptions } from "fastify";
 import { DomainError } from "../declarations/errors";
-import { createDraft, type DeclarationsRepo, type DraftInput } from "../declarations/service";
+import { createDraft, type DraftInput, fileDeclaration, type FilingDeps } from "../declarations/service";
 
-export interface AppDeps {
-  declarations: DeclarationsRepo;
-}
+export type AppDeps = FilingDeps;
 
 const draftSchema = {
   body: {
@@ -38,6 +36,10 @@ export function buildApp(deps: AppDeps, options: FastifyServerOptions = {}) {
 
   app.post<{ Body: DraftInput }>("/declarations", { schema: draftSchema }, async (request, reply) => {
     return reply.code(201).send(await createDraft(deps.declarations, request.body));
+  });
+
+  app.post<{ Params: { id: string } }>("/declarations/:id/submit", async (request) => {
+    return fileDeclaration(deps, Number(request.params.id));
   });
 
   return app;

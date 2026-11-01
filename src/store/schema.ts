@@ -25,5 +25,16 @@ export const declarations = pgTable("declarations", {
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 
+export const filingAttempts = pgTable("filing_attempts", {
+  id: serial("id").primaryKey(),
+  declarationId: integer("declaration_id")
+    .notNull()
+    .references(() => declarations.id),
+  outcome: text("outcome", { enum: ["accepted", "rejected", "failed"] }).notNull(),
+  errorCode: text("error_code"),
+  attemptedAt: timestamp("attempted_at", { withTimezone: true }).notNull(),
+});
+
 export type Client = typeof clients.$inferSelect;
 export type Declaration = typeof declarations.$inferSelect;
+export type FilingAttempt = typeof filingAttempts.$inferSelect;

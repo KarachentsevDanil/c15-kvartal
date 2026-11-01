@@ -9,8 +9,12 @@ function setup(overrides: Partial<AppDeps["declarations"]> = {}) {
     declarations: {
       listByClient: vi.fn().mockResolvedValue([]),
       createDraft: vi.fn(async (values) => ({ id: 7, status: "draft", ...values })),
+      findForFiling: vi.fn().mockResolvedValue(undefined),
+      recordAttempt: vi.fn(),
       ...overrides,
     } as AppDeps["declarations"],
+    dokat: { submit: vi.fn() },
+    now: () => new Date("2026-11-03T09:00:00Z"),
   });
 }
 
@@ -44,5 +48,14 @@ describe("POST /declarations", () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.json()).toEqual({ error: "CLIENT_NOT_FOUND" });
+  });
+});
+
+describe("POST /declarations/:id/submit", () => {
+  it("відповідає 404, якщо декларації немає", async () => {
+    const response = await setup().inject({ method: "POST", url: "/declarations/7/submit" });
+
+    expect(response.statusCode).toBe(404);
+    expect(response.json()).toEqual({ error: "DECLARATION_NOT_FOUND" });
   });
 });
