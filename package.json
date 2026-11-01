@@ -17,7 +17,9 @@
     "test": "vitest run --project unit",
     "test:integration": "vitest run --project integration",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/store/run-migrations.ts"
+    "db:migrate": "tsx src/store/run-migrations.ts",
+    "db:seed": "tsx stand/seed.ts",
+    "dokat:stub": "node stand/dokat/server.mjs"
   },
   "dependencies": {
     "@kvartal/dokat-client": "1.4.0",
