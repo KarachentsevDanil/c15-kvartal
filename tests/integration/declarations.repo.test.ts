@@ -30,6 +30,10 @@ describe("DrizzleDeclarationsRepo", () => {
     await expect(repo.createDraft({ ...draft, clientId: 999 })).rejects.toMatchObject({ code: "CLIENT_NOT_FOUND" });
   });
 
+  it("відмовляє у другій декларації за той самий період", async () => {
+    await expect(repo.createDraft(draft)).rejects.toMatchObject({ code: "DECLARATION_EXISTS" });
+  });
+
   it("знаходить декларацію для подання разом із податковим номером клієнта", async () => {
     const { id } = await repo.createDraft({ ...draft, quarter: 2 });
 

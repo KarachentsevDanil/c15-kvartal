@@ -1,8 +1,8 @@
 import { asc, eq, getTableColumns } from "drizzle-orm";
-import { clientNotFound } from "../declarations/errors";
+import { clientNotFound, declarationExists } from "../declarations/errors";
 import type { DeclarationForFiling, DeclarationsRepo, DraftInput, FilingAttemptInput } from "../declarations/service";
 import type { Db } from "./db";
-import { PG_FOREIGN_KEY_VIOLATION, pgErrorCode } from "./errors";
+import { PG_FOREIGN_KEY_VIOLATION, PG_UNIQUE_VIOLATION, pgErrorCode } from "./errors";
 import { clients, declarations, filingAttempts, type Declaration } from "./schema";
 
 export class DrizzleDeclarationsRepo implements DeclarationsRepo {
@@ -23,6 +23,9 @@ export class DrizzleDeclarationsRepo implements DeclarationsRepo {
     } catch (error) {
       if (pgErrorCode(error) === PG_FOREIGN_KEY_VIOLATION) {
         throw clientNotFound();
+      }
+      if (pgErrorCode(error) === PG_UNIQUE_VIOLATION) {
+        throw declarationExists();
       }
       throw error;
     }

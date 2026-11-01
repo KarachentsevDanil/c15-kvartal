@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { type AppDeps, buildApp } from "../../src/api/app";
-import { clientNotFound } from "../../src/declarations/errors";
+import { clientNotFound, declarationExists } from "../../src/declarations/errors";
 
 const draft = { clientId: 1, year: 2026, quarter: 3, incomeKopecks: 10_000_000 };
 
@@ -48,6 +48,17 @@ describe("POST /declarations", () => {
 
     expect(response.statusCode).toBe(404);
     expect(response.json()).toEqual({ error: "CLIENT_NOT_FOUND" });
+  });
+});
+
+describe("POST /declarations, повторний період", () => {
+  it("відповідає 409, якщо декларація за період уже є", async () => {
+    const app = setup({ createDraft: vi.fn().mockRejectedValue(declarationExists()) });
+
+    const response = await app.inject({ method: "POST", url: "/declarations", payload: draft });
+
+    expect(response.statusCode).toBe(409);
+    expect(response.json()).toEqual({ error: "DECLARATION_EXISTS" });
   });
 });
 

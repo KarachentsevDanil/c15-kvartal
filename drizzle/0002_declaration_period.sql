@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "declarations_client_period_idx" ON "declarations" USING btree ("client_id","quarter");
