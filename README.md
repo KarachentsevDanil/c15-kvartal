@@ -13,6 +13,37 @@
 
 Сценарії S3, S4 і S6 локально не відтворюються: тут немає хелпдеска, приватного реєстру й Slack.
 
+## Цільова конфігурація
+
+Гілка містить цільовий стан із Theory 2. `.claude/settings.json` дослівно збігається з розділом «Що дала конфігурація». Особисті налаштування не можуть жити в репозиторії, тому їхній приклад лежить у `docs/personal-settings.example.json`. Кожен розробник переносить їх у `~/.claude/settings.json`, а токен реєстру зі `~/.npmrc` у змінну `NPM_TOKEN`. У `~/.npmrc` лишається посилання:
+
+```
+//npm.pkg.github.com/:_authToken=${NPM_TOKEN}
+```
+
+| Крок | Зміна | Де | Сценарій |
+| --- | --- | --- | --- |
+| 1 | Вузькі allow замість `Bash(npm run *)` | `.claude/settings.json` | S5 |
+| 2 | Sandbox: `Read(./.env)` діє і на запущені процеси | `.claude/settings.json` | S2 |
+| 2 | `GITHUB_TOKEN` у `credentials` із режимом `deny` | `.claude/settings.json` | S2, S3 |
+| 2 | `NPM_TOKEN` із режимом `mask`, `tlsTerminate` | особисті налаштування | S3, S4 |
+| 3 | `allowedDomains`, `allowUnsandboxedCommands: false` | `.claude/settings.json` | S3 |
+| 3 | `strictAllowlist` | особисті налаштування | S3 |
+| 4 | `ask` на `npm run db:reset` і надсилання в Slack | `.claude/settings.json` | S5, S6 |
+
+`.claude/hooks/slack-channels.sh` — каркас гарда з Theory 2. У `settings.json` він не зареєстрований, бо цільова конфігурація теорії його не містить. Ця гілка є відповіддю до теорії, а не до task-1: повний гард студент будує в task-1 на кейсі C16.
+
+### Що не закрито
+
+- **Платформи.** Sandbox працює на macOS, Linux і WSL2. На нативному Windows цих гарантій немає.
+- **Шкідливий код.** Sandbox обмежує postinstall-скрипт, але не забороняє йому виконуватись. Для цього потрібні `ignore-scripts` і перевірка залежностей у CI. `npm install` у власному терміналі розробника конфігурація сесії не обмежує.
+- **Канал Slack.** Правило дозволів не перевіряє параметри виклику, для цього потрібен гард. Каркас покриває лише `channel_id` у `slack_send_message`.
+- **Секрети в коді.** Сканування секретів у CI немає: workflow запускає lint, typecheck і unit.
+- **GitHub.** Environment з обов'язковим рев'юером і CODEOWNERS для `.github/workflows` налаштовують у репозиторії GitHub, а не в сесії.
+- **Команди, яким потрібна база або Docker.** За документацією sandbox драйвери баз даних не працюють через його proxy, а до сервера на цій машині команда напряму не дістається. Тому `db:migrate`, `db:reset`, `db:seed`, `dev` і `test:integration` запускай у власному терміналі: через агента вони не дістануться ні бази, ні сокета Docker, навіть після підтвердження `ask`.
+
+Реальною сесією Claude Code цю гілку не перевірено.
+
 ## Структура
 
 ```
@@ -29,8 +60,9 @@ stand/
   seed.ts          вигадані ФОП для локальної роботи
 tests/             unit-тести Vitest
 tests/integration/ Vitest, Testcontainers (Postgres 16, потрібен Docker)
+docs/              приклад особистих налаштувань
 docker-compose.yml, .env.example, .npmrc, CLAUDE.md, .claude/settings.json,
-.github/workflows/ci.yml
+.claude/hooks/, .github/workflows/ci.yml
 ```
 
 ## Запуск
