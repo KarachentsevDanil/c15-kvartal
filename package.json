@@ -18,6 +18,7 @@
     "test:integration": "vitest run --project integration",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx src/store/run-migrations.ts",
+    "db:reset": "tsx src/store/run-reset.ts",
     "db:seed": "tsx stand/seed.ts",
     "dokat:stub": "node stand/dokat/server.mjs"
   },
