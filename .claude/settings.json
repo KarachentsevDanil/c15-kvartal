@@ -11,10 +11,14 @@
   },
   "sandbox": {
     "enabled": true,
+    "allowUnsandboxedCommands": false,
     "credentials": {
       "envVars": [
         { "name": "GITHUB_TOKEN", "mode": "deny" }
       ]
+    },
+    "network": {
+      "allowedDomains": ["registry.npmjs.org", "npm.pkg.github.com"]
     }
   }
 }
