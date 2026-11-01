@@ -1,0 +1,17 @@
+# Локальна база для розробки: Postgres 16 на localhost.
+name: kvartal
+
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: kvartal
+      POSTGRES_PASSWORD: kvartal
+      POSTGRES_DB: kvartal
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready", "-h", "127.0.0.1", "-U", "kvartal"]
+      interval: 2s
+      timeout: 3s
+      retries: 15
